@@ -1,0 +1,83 @@
+
+const THREE = require('three');
+const OrbitControls = require('three-orbit-controls')(THREE)
+import Stats from 'stats-js'
+import DAT from 'dat-gui'
+
+// when the scene is done initializing, the function passed as `callback` will be executed
+// then, every frame, the function passed as `update` will be executed
+function init(callback, update) {
+  var stats = new Stats();
+  stats.setMode(1);
+  stats.domElement.style.position = 'absolute';
+  stats.domElement.style.left = '0px';
+  stats.domElement.style.top = '0px';
+  document.body.appendChild(stats.domElement);
+
+  var gui = new DAT.GUI();
+
+  var framework = {
+    gui: gui,
+    stats: stats
+  };
+
+  // run this function after the window loads
+  window.addEventListener('load', function() {
+
+    var scene = new THREE.Scene();
+    var renderCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 1.0 / Math.pow( 2, 53 ), 1);
+    var camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    //var camera = new THREE.PerspectiveCamera( 60, 1, 0.1, 1 );
+    var renderer = new THREE.WebGLRenderer( { antialias: true } );
+    // DON'T USE THIS, CAUSES WINDOW TO BE SQUISHED TO THE BOTTOM LEFT CORNER
+    //renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x020202, 0);
+
+    var controls = new OrbitControls(camera, renderer.domElement);
+    // controls.enableDamping = true;
+    // controls.enableZoom = true;
+    // controls.target.set(0, 0, 0);
+    // controls.rotateSpeed = 0.3;
+    // controls.zoomSpeed = 1.0;
+    // controls.panSpeed = 2.0;
+
+
+    document.body.appendChild(renderer.domElement);
+
+    // resize the canvas when the window changes
+    window.addEventListener('resize', function() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // assign THREE.js objects to the object we will return
+    framework.scene = scene;
+    framework.camera = camera;
+    framework.renderCamera = renderCamera;
+    framework.renderer = renderer;
+    framework.target = new THREE.Vector3();
+    framework.distance = 500;
+    framework.precision = 0.001;
+
+    // begin the animation loop
+    (function tick() {
+      stats.begin();
+      update(framework); // perform any requested updates
+      renderer.render(scene, renderCamera); // render the scene
+      stats.end();
+      requestAnimationFrame(tick); // register to call this again when the browser renders a new frame
+    })();
+
+    // we will pass the scene, gui, renderer, camera, etc... to the callback function
+    return callback(framework);
+  });
+}
+
+export default {
+  init: init
+}
+
+export const PI = 3.14159265
+export const e = 2.7181718
