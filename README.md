@@ -2,7 +2,7 @@
 
 ## Overview
 
-Prometheus molded humans out of water and earth. Here we attempt to mold humans out of signed distance functions using the GPU.
+Prometheus molded humans out of water and earth. Here we attempt to mold humans out of signed distance functions using WebGL and the GPU.
 
 ## Acknowledgements
 
