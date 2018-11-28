@@ -42,7 +42,6 @@ function init(callback, update) {
     // controls.zoomSpeed = 1.0;
     // controls.panSpeed = 2.0;
 
-
     document.body.appendChild(renderer.domElement);
 
     // resize the canvas when the window changes

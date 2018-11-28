@@ -1,5 +1,6 @@
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
 import Framework from './framework'
+import Walker from './walker.js'
 
 var scene;
 var camera;
@@ -13,6 +14,7 @@ var target;
 var startTime = Date.now();
 var distance;
 var precision;
+var walker;
 
 // options for shader
 var options = {
@@ -39,7 +41,7 @@ function onLoad(framework)
   window.addEventListener( "resize", onResize, false );
 
   // set camera position
-  camera.position.set(0, 0, 8);
+  camera.position.set(6, 10, 12);
   camera.lookAt(new THREE.Vector3(0,0,0));
 
   material = new THREE.ShaderMaterial({
@@ -60,10 +62,10 @@ function onLoad(framework)
           fov : { type: "f", value: 45 },
           raymarchMaximumDistance:{ type: "f", value: distance },
           raymarchPrecision:{ type: "f", value: precision},
-          color0: {type: "v3", value: new THREE.Vector3(0.9, 0.9, 0.0) }, //yellow
-          light0: {type: "v3", value: new THREE.Vector3(-0.5, 0.75, -0.5) },
-          color1: {type: "v3", value: new THREE.Vector3(0.0, 0.2, 0.9) }, //blue
-          light1: {type: "v3", value: new THREE.Vector3( 0.5, -0.75, 0.5) }
+          //color0: {type: "v3", value: new THREE.Vector3(0.9, 0.9, 0.0) }, //yellow
+          //light0: {type: "v3", value: new THREE.Vector3(-0.5, 0.75, -0.5) },
+          //color1: {type: "v3", value: new THREE.Vector3(0.0, 0.2, 0.9) }, //blue
+          //light1: {type: "v3", value: new THREE.Vector3( 0.5, -0.75, 0.5) }
       },
       vertexShader: require('./shaders/sdf-vert.glsl'),
       fragmentShader: require('./shaders/sdf-frag.glsl')
@@ -75,6 +77,9 @@ function onLoad(framework)
   mesh = new THREE.Mesh( geom, material );
   //mesh.material.side = THREE.DoubleSide;
   scene.add(mesh);
+
+  walker = new Walker( material, target );
+  walker.update();
 
   /*
   // edit params and listen to changes like this
@@ -106,6 +111,10 @@ function onResize(e)
 // called on frame updates
 function onUpdate(framework) 
 {
+  if (walker != null)
+  {
+    walker.update();
+  }
 
   if (material != null && material.uniforms != null)
   {
